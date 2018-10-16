@@ -16,11 +16,16 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from simplesocial import views
+from simplesocial.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.HomeView.as_view(), name='home'),
+    url(r"^test/$", views.TestView.as_view(), name=LOGIN_REDIRECT_URL),
+    url(r"^thanks/$", views.ThanksView.as_view(), name=LOGOUT_REDIRECT_URL),
     url(r'^accounts/', include("accounts.urls", namespace="accounts")),
     url(r"^accounts/", include("django.contrib.auth.urls")),
+
+
 
 ]
