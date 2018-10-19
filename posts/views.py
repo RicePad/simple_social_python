@@ -51,8 +51,6 @@ class PostDetailView(SelectRelatedMixin, DetailView):
         )
 
 
-
-
 class CreatePostView(LoginRequiredMixin, SelectRelatedMixin, CreateView):
     fields = ("message", "group")
     model = Post
