@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_misaka',
     'accounts',
     'groups',
+    'posts',
 ]
 
 MIDDLEWARE = [

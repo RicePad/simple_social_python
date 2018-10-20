@@ -1,6 +1,10 @@
 from django.db import models
-from django.coure.urlresolvers import reverse
+from django.core.urlresolvers import reverse
 from django.utils.text import slugify
+from django.contrib.auth import get_user_model
+User = get_user_model()
+import misaka
+
 # Create your GROUP models here.
 class Group(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -18,7 +22,7 @@ class Group(models.Model):
         return reverse("groups:single", kwargs={"slug": self.slug})
 
     class Meta:
-    ordering = ["name"]
+        ordering = ["name"]
 
 
     def __str__(self):
