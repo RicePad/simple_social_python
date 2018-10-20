@@ -25,6 +25,10 @@ urlpatterns = [
     url(r"^thanks/$", views.ThanksView.as_view(), name=LOGOUT_REDIRECT_URL),
     url(r'^accounts/', include("accounts.urls", namespace="accounts")),
     url(r"^accounts/", include("django.contrib.auth.urls")),
+    url(r"^posts/", include("posts.urls", namespace="posts")),
+    url(r"^groups/",include("groups.urls", namespace="groups")),
+
+
 
 
 

@@ -6,12 +6,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
-from django.views import CreateView, ListView, DetailView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, DeleteView
 
 from braces.views import SelectRelatedMixin
 
 from . import forms
 from posts.models import Post
+from . import models
+from django.views import generic
+
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -21,14 +24,14 @@ class PostListView(SelectRelatedMixin, ListView):
     model = Post
     select_related = ("user", "group")
 
-class UserPostList(ListView):
-    model = Post
+class UserPosts(generic.ListView):
+    model = models.Post
     template_name = "posts/user_post_list.html"
 
     def get_queryset(self):
         try:
-            self.post_user = User.objects.prefect_related("posts").get(
-            username__iexact=self.kwargs.get("username")
+            self.post_user = User.objects.prefetch_related("posts").get(
+                username__iexact=self.kwargs.get("username")
             )
         except User.DoesNotExist:
             raise Http404
@@ -40,6 +43,7 @@ class UserPostList(ListView):
         context["post_user"] = self.post_user
         return context
 
+
 class PostDetailView(SelectRelatedMixin, DetailView):
     model = Post
     select_related = ("user", "group")
@@ -47,23 +51,27 @@ class PostDetailView(SelectRelatedMixin, DetailView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(
-            user__name__iexact=self.kwargs.get("username")
+            user__username__iexact=self.kwargs.get("username")
         )
 
 
-class CreatePostView(LoginRequiredMixin, SelectRelatedMixin, CreateView):
-    fields = ("message", "group")
+class CreatePostView(LoginRequiredMixin, SelectRelatedMixin,CreateView):
+    # form_class = forms.PostForm
+    fields = ('message','group')
     model = Post
 
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     kwargs.update({"user": self.request.user})
+    #     return kwargs
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.user = self.request.username
+        self.object.user = self.request.user
         self.object.save()
         return super().form_valid(form)
 
-
-class DeletePostView(LoginRequiredMixin, SelectRelatedMixin, DeleteView):
+class DeletePostView(LoginRequiredMixin, SelectRelatedMixin, generic.DeleteView):
     model = models.Post
     select_related = ("user", "group")
     success_url = reverse_lazy("posts:all")
