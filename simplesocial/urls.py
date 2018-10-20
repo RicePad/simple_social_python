@@ -13,10 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.conf.urls import include, url  # For django versions before 2.0
 from django.contrib import admin
 from simplesocial import views
 from simplesocial.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
+from django.conf import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -27,9 +28,14 @@ urlpatterns = [
     url(r"^accounts/", include("django.contrib.auth.urls")),
     url(r"^posts/", include("posts.urls", namespace="posts")),
     url(r"^groups/",include("groups.urls", namespace="groups")),
-
-
-
-
-
 ]
+
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+         url(r'^__debug__/', include(debug_toolbar.urls)),
+
+        
+
+    ] + urlpatterns
